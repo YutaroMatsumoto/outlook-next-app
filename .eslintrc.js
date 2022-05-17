@@ -38,10 +38,10 @@ module.exports = {
     },
   },
   rules: {
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-empty-function': 'off',
-    '@typescript-eslint/ban-ts-comment': 'off',
-    '@next/next/no-img-element': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off', // 関数の戻り値を明記するか
+    '@typescript-eslint/no-empty-function': 'off', //　空の関数の定義を禁止するか
+    '@typescript-eslint/ban-ts-comment': 'off', // コメントに関するルール？（https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/eslint-plugin/docs/rules/ban-ts-comment.md）
+    '@next/next/no-img-element': 'off', // imgタグを使用可能にする
   },
   ignorePatterns: ['*.config.js', '*.d.ts', 'generated'],
 }

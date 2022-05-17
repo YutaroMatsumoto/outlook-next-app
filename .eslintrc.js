@@ -27,7 +27,7 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   parser: '@typescript-eslint/parser',
   parserOptions: { sourceType: 'module', ecmaVersion: 2020 },
-  env: { es6: true, node: true },
+  env: { es6: true, node: true, browser: true },
   globals: {},
   settings: {
     'import/resolver': {

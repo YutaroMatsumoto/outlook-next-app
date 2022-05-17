@@ -9,6 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@azure/msal-browser": "2.16.1",
+    "@azure/msal-react": "1.0.1",
+    "@microsoft/microsoft-graph-client": "3.0.0",
+    "@types/microsoft-graph": "^2.19.0",
+    "date-fns": "2.22.1",
+    "date-fns-tz": "1.1.4",
     "next": "12.1.6",
     "react": "18.1.0",
     "react-dom": "18.1.0"

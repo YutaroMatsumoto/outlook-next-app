@@ -10,6 +10,10 @@ import { AuthCodeMSALBrowserAuthenticationProvider } from '@microsoft/microsoft-
 import { InteractionType, PublicClientApplication } from '@azure/msal-browser'
 import { useMsal } from '@azure/msal-react'
 
+import { config } from 'src/libs/config'
+
+// Used by the Graph SDK to authenticate API calls
+
 export interface AppUser {
   displayName?: string
   email?: string
@@ -59,6 +63,8 @@ export default function ProvideAppContext({
 }
 
 function useProvideAppContext() {
+  const msal = useMsal()
+
   const [user, setUser] = useState<AppUser | undefined>(undefined)
   const [error, setError] = useState<AppError | undefined>(undefined)
 
@@ -66,14 +72,27 @@ function useProvideAppContext() {
     setError({ message, debug })
   }
 
-  const clearError = () => {
-    setError(undefined)
-  }
-
-  const authProvider = undefined
+  const authProvider = new AuthCodeMSALBrowserAuthenticationProvider(
+    msal.instance as PublicClientApplication,
+    {
+      account: msal.instance.getActiveAccount()!,
+      scopes: config.scopes,
+      interactionType: InteractionType.Popup,
+    }
+  )
 
   const signIn = async () => {
-    // TODO
+    const result = await msal.instance.loginPopup({
+      scopes: config.scopes,
+      prompt: 'select_account',
+    })
+
+    // TEMPORARY: Show the access token
+    displayError('Access token retrieved', result.accessToken)
+  }
+
+  const clearError = () => {
+    setError(undefined)
   }
 
   const signOut = async () => {

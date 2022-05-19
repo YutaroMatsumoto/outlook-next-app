@@ -1,25 +1,39 @@
-// import { BrowserRouter as Router, Route } from 'react-router-dom'
-import { Container } from 'react-bootstrap'
-import { MsalProvider } from '@azure/msal-react'
-import { IPublicClientApplication } from '@azure/msal-browser'
+// import 'react'
+import {
+  PublicClientApplication,
+  EventType,
+  EventMessage,
+  AuthenticationResult,
+} from '@azure/msal-browser'
+import { config } from 'src/libs/config'
+import Home from 'src/components/organisms/home'
 
-import ProvideAppContext from 'src/contexts/AppContext'
-import ErrorMessage from 'src/components/ErrorMessage'
-import NavBar from 'src/components/NavBar'
-import Welcome from 'src/components/Welcome'
-import 'bootstrap/dist/css/bootstrap.css'
+const msalInstance = new PublicClientApplication({
+  auth: {
+    clientId: config.appId,
+    redirectUri: config.redirectUri,
+  },
+  cache: {
+    cacheLocation: 'sessionStorage',
+    storeAuthStateInCookie: true,
+  },
+})
+
+// Check if there are already accounts in the browser session
+// If so, set the first account as the active account
+const accounts = msalInstance.getAllAccounts()
+if (accounts && accounts.length > 0) {
+  msalInstance.setActiveAccount(accounts[0])
+}
+
+msalInstance.addEventCallback((event: EventMessage) => {
+  if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
+    // Set the active account - this simplifies token acquisition
+    const authResult = event.payload as AuthenticationResult
+    msalInstance.setActiveAccount(authResult.account)
+  }
+})
 
 export default function App() {
-  return (
-    <ProvideAppContext>
-      {/* <Router> */}
-      <NavBar />
-      <Container>
-        <ErrorMessage />
-        {/* <Route exact path="/" render={(props) => <Welcome {...props} />} /> */}
-        <Welcome />
-      </Container>
-      {/* </Router> */}
-    </ProvideAppContext>
-  )
+  return <Home pca={msalInstance} />
 }

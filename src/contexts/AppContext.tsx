@@ -11,6 +11,7 @@ import { InteractionType, PublicClientApplication } from '@azure/msal-browser'
 import { useMsal } from '@azure/msal-react'
 
 import { config } from 'src/libs/config'
+import { getUser } from 'src/utils/graphService'
 
 // Used by the Graph SDK to authenticate API calls
 
@@ -63,6 +64,31 @@ export default function ProvideAppContext({
 }
 
 function useProvideAppContext() {
+  useEffect(() => {
+    const checkUser = async () => {
+      if (!user) {
+        try {
+          // Check if user is already signed in
+          const account = msal.instance.getActiveAccount()
+          if (account) {
+            // Get the user from Microsoft Graph
+            const user = await getUser(authProvider)
+
+            setUser({
+              displayName: user.displayName || '',
+              email: user.mail || user.userPrincipalName || '',
+              timeFormat: user.mailboxSettings?.timeFormat || 'h:mm a',
+              timeZone: user.mailboxSettings?.timeZone || 'UTC',
+            })
+          }
+        } catch (err: any) {
+          displayError(err.message)
+        }
+      }
+    }
+    checkUser()
+  })
+
   const msal = useMsal()
 
   const [user, setUser] = useState<AppUser | undefined>(undefined)
@@ -72,6 +98,7 @@ function useProvideAppContext() {
     setError({ message, debug })
   }
 
+  // TODO: authProviderの中身調べる
   const authProvider = new AuthCodeMSALBrowserAuthenticationProvider(
     msal.instance as PublicClientApplication,
     {
@@ -87,8 +114,15 @@ function useProvideAppContext() {
       prompt: 'select_account',
     })
 
-    // TEMPORARY: Show the access token
-    displayError('Access token retrieved', result.accessToken)
+    // Get the user from Microsoft Graph
+    const user = await getUser(authProvider)
+
+    setUser({
+      displayName: user.displayName || '',
+      email: user.mail || user.userPrincipalName || '',
+      timeFormat: user.mailboxSettings?.timeFormat || '',
+      timeZone: user.mailboxSettings?.timeZone || 'UTC',
+    })
   }
 
   const clearError = () => {
@@ -96,7 +130,8 @@ function useProvideAppContext() {
   }
 
   const signOut = async () => {
-    // TODO
+    await msal.instance.logoutPopup()
+    setUser(undefined)
   }
 
   return {

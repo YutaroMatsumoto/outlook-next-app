@@ -23,7 +23,7 @@ function UserAvatar(props: UserAvatarProps) {
   // If a user avatar is available, return an img tag with the pic
   return (
     <img
-      src={props.user.avatar || '/images/no-profile-photo.png'}
+      src={props.user.avatar || '/no-profile-photo.png'}
       alt="user"
       className="rounded-circle align-self-center mr-2"
       style={{ width: '32px' }}

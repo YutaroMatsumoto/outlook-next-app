@@ -1,4 +1,7 @@
-// import 'react'
+import 'src/styles/globals.css'
+import type { AppProps } from 'next/app'
+import { MsalProvider } from '@azure/msal-react'
+import ProvideAppContext from 'src/contexts/AppContext'
 import {
   PublicClientApplication,
   EventType,
@@ -6,7 +9,6 @@ import {
   AuthenticationResult,
 } from '@azure/msal-browser'
 import { config } from 'src/libs/config'
-import Home from 'src/components/organisms/home'
 
 const msalInstance = new PublicClientApplication({
   auth: {
@@ -34,6 +36,14 @@ msalInstance.addEventCallback((event: EventMessage) => {
   }
 })
 
-export default function App() {
-  return <Home pca={msalInstance} />
+function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <MsalProvider instance={msalInstance}>
+      <ProvideAppContext>
+        <Component {...pageProps} />
+      </ProvideAppContext>
+    </MsalProvider>
+  )
 }
+
+export default MyApp

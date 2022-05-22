@@ -62,6 +62,9 @@ export default function Calendar() {
                   </tr>
                 </thead>
                 <tbody>
+                  {/* getDayは曜日を取得している */}
+                  {/* 0は日曜日、1は月曜日、・・・6は土曜日 */}
+                  {/* events!.filter はeventの中の該当の土曜日のイベントを返す */}
                   <CalendarDayRow
                     date={weekStart}
                     timeFormat={app.user?.timeFormat!}
